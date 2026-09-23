@@ -95,9 +95,11 @@ export async function findAllByUserId(userId, filters = {}) {
        m.activa,
        m.created_at AS createdAt,
        m.updated_at AS updatedAt
-     FROM materia m
-     WHERE m.id_materia = ? AND m.id_usuario = ?`,
-     [id, userId]
+      FROM materia m
+      WHERE ${conditions.join(" AND ")}
+      ORDER BY ${orderBy}
+      LIMIT ? OFFSET ?`,
+    [...params, limit, offset]
   );
 
   // La respuesta final incluye la lista de materias ya convertidas a objetos limpios y el total
