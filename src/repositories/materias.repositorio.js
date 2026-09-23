@@ -128,4 +128,108 @@ export async function findByIdAndUserId(id, userId) {
 
     return rows[0] ? mapMateriaRow(rows[0]) : null;
 }
+
+
+export async function existsByCode(userId, codigo, excludeId) {
+  const params = [userId, codigo];
+  let sql = "SELECT 1 FROM materia WHERE id_usuario = ? AND codigo = ?";
+
+  if (excludeId) {
+    sql += " AND id_materia <> ?";
+    params.push(excludeId);
+  }
+
+  sql += " LIMIT 1";
+
+  const [rows] = await pool.execute(sql, params);
+  return rows.length > 0;
+}
+
+export async function existsByName(userId, nombre, excludeId) {
+  const params = [userId, nombre];
+  let sql = "SELECT 1 FROM materia WHERE id_usuario = ? AND nombre = ?";
+
+  if (excludeId) {
+    sql += " AND id_materia <> ?";
+    params.push(excludeId);
+  }
+
+  sql += " LIMIT 1";
+
+  const [rows] = await pool.execute(sql, params);
+  return rows.length > 0;
+}
        
+
+export async function createMateria(userId, materia) {
+  const [result] = await pool.execute(
+    `INSERT INTO materia (id_usuario, nombre, codigo, color, creditos, activa)
+     VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+      userId,
+      materia.nombre,
+      materia.codigo,
+      materia.color,
+      materia.creditos,
+      materia.activa ? 1 : 0
+    ]
+  );
+
+  return findByIdAndUserId(result.insertId, userId);
+}
+
+export async function patchMateria(id, userId, partialMateria) {
+  const fields = [];
+  const params = [];
+
+  if (partialMateria.nombre !== undefined) {
+    fields.push("nombre = ?");
+    params.push(partialMateria.nombre);
+  }
+
+  if (partialMateria.codigo !== undefined) {
+    fields.push("codigo = ?");
+    params.push(partialMateria.codigo);
+  }
+
+  if (partialMateria.color !== undefined) {
+    fields.push("color = ?");
+    params.push(partialMateria.color);
+  }
+
+  if (partialMateria.creditos !== undefined) {
+    fields.push("creditos = ?");
+    params.push(partialMateria.creditos);
+  }
+
+  if (partialMateria.activa !== undefined) {
+    fields.push("activa = ?");
+    params.push(partialMateria.activa ? 1 : 0);
+  }
+
+  if (fields.length === 0) {
+    return findByIdAndUserId(id, userId);
+  }
+
+  params.push(id, userId);
+
+  await pool.execute(
+    `UPDATE materia
+     SET ${fields.join(", ")}
+     WHERE id_materia = ? AND id_usuario = ?`,
+    params
+  );
+
+  return findByIdAndUserId(id, userId);
+}
+
+
+export async function deleteMateria(id, userId) {
+  const [result] = await pool.execute(
+    "DELETE FROM materia WHERE id_materia = ? AND id_usuario = ?",
+    [id, userId]
+  );
+
+  return result.affectedRows > 0;
+}
+
