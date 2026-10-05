@@ -167,3 +167,31 @@ export async function removeMateria(id, userId) {
   await materiasRepository.deleteMateria(id, userId);
 }
 
+/**
+ * Solicita al repositorio las tareas asociadas a una materia del usuario.
+ *
+ * @async
+ * @function listTareasByMateria
+ * @param {string|number} id - Identificador de la materia cuyas tareas se consultarán.
+ * @param {string|number} userId - Identificador del usuario propietario de la materia.
+ * @returns {Promise<Object[]>} Lista de tareas; será un arreglo vacío si no hay coincidencias.
+ * @throws {Error} Propaga errores de base de datos generados por el repositorio.
+ */
+export async function listTareasByMateria(id, userId) {
+  return materiasRepository.findTareasByMateriaAndUserId(id, userId);
+}
+
+/**
+ * Solicita al repositorio los eventos asociados a una materia del usuario.
+ *
+ * @async
+ * @function listEventosByMateria
+ * @param {string|number} id - Identificador de la materia cuyos eventos se consultarán.
+ * @param {string|number} userId - Identificador del usuario propietario de la materia.
+ * @returns {Promise<Object[]>} Lista de eventos; será un arreglo vacío si no hay coincidencias.
+ * @throws {Error} Propaga errores de base de datos generados por el repositorio.
+ */
+export async function listEventosByMateria(id, userId) {
+  return materiasRepository.findEventosByMateriaAndUserId(id, userId);
+}
+

@@ -339,3 +339,70 @@ export async function deleteMateria(id, userId) {
   return result.affectedRows > 0;
 }
 
+/**
+ * Busca las tareas de una materia y filtra también por el usuario propietario.
+ *
+ * @async
+ * @function findTareasByMateriaAndUserId
+ * @param {string|number} id - Identificador de la materia.
+ * @param {string|number} userId - Identificador del usuario propietario de la materia.
+ * @returns {Promise<Object[]>} Filas de tareas encontradas con sus campos en camelCase.
+ * @throws {Error} Propaga errores generados por la consulta de MySQL.
+ */
+export async function findTareasByMateriaAndUserId(id, userId) {
+  const [rows] = await pool.execute(
+    `SELECT
+       t.id_tarea AS id,
+       t.id_materia AS materiaId,
+       t.titulo,
+       t.descripcion,
+       t.fecha_entrega AS fechaEntrega,
+       t.hora_entrega AS horaEntrega,
+       t.prioridad,
+       t.estado,
+       t.carga_estimada_minutos AS cargaEstimadaMinutos,
+       t.porcentaje_avance AS porcentajeAvance,
+       t.created_at AS createdAt,
+       t.updated_at AS updatedAt
+     FROM tarea t
+     INNER JOIN materia m ON m.id_materia = t.id_materia
+     WHERE m.id_materia = ? AND m.id_usuario = ?`,
+    [id, userId]
+  );
+
+  return rows;
+}
+
+/**
+ * Busca los eventos de una materia y filtra también por el usuario propietario.
+ *
+ * @async
+ * @function findEventosByMateriaAndUserId
+ * @param {string|number} id - Identificador de la materia.
+ * @param {string|number} userId - Identificador del usuario propietario de la materia.
+ * @returns {Promise<Object[]>} Filas de eventos encontradas con sus campos en camelCase.
+ * @throws {Error} Propaga errores generados por la consulta de MySQL.
+ */
+export async function findEventosByMateriaAndUserId(id, userId) {
+  // esta es la function que selecciona los eventos de una materia, miren que el proceso es el mismo
+  const [rows] = await pool.execute(
+    `SELECT
+       e.id_evento AS id,
+       e.id_materia AS materiaId,
+       e.titulo,
+       e.descripcion,
+       e.fecha,
+       e.hora_inicio AS horaInicio,
+       e.hora_fin AS horaFin,
+       e.tipo,
+       e.created_at AS createdAt,
+       e.updated_at AS updatedAt
+     FROM evento e
+     INNER JOIN materia m ON m.id_materia = e.id_materia
+     WHERE m.id_materia = ? AND m.id_usuario = ?`,
+    [id, userId]
+  );
+
+  return rows;
+}
+

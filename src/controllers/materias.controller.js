@@ -139,3 +139,47 @@ export async function deleteMateria(request, response, next) {
   }
 }
 
+/**
+ * Obtiene las tareas de una materia que pertenece al usuario autenticado.
+ *
+ * @async
+ * @function listTareasByMateria
+ * @param {import("express").Request} request - Solicitud con el ID de materia en params y el usuario en request.user.
+ * @param {import("express").Response} response - Respuesta HTTP de Express.
+ * @param {import("express").NextFunction} next - Función para delegar errores al middleware de errores.
+ * @returns {Promise<import("express").Response|void>} Responde con las tareas encontradas en estado HTTP 200.
+ * @throws {HttpError} Propaga errores de validación o de consulta para que los gestione el middleware.
+ */
+export async function listTareasByMateria(request, response, next) {
+  try {
+    const id = validateMateriaId(request.params.id);
+    const tareas = await materiasService.listTareasByMateria(id, request.user.id);
+
+    return sendSuccess(response, tareas);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Obtiene los eventos de una materia que pertenece al usuario autenticado.
+ *
+ * @async
+ * @function listEventosByMateria
+ * @param {import("express").Request} request - Solicitud con el ID de materia en params y el usuario en request.user.
+ * @param {import("express").Response} response - Respuesta HTTP de Express.
+ * @param {import("express").NextFunction} next - Función para delegar errores al middleware de errores.
+ * @returns {Promise<import("express").Response|void>} Responde con los eventos encontrados en estado HTTP 200.
+ * @throws {HttpError} Propaga errores de validación o de consulta para que los gestione el middleware.
+ */
+export async function listEventosByMateria(request, response, next) {
+  try {
+    const id = validateMateriaId(request.params.id);
+    const eventos = await materiasService.listEventosByMateria(id, request.user.id);
+
+    return sendSuccess(response, eventos);
+  } catch (error) {
+    return next(error);
+  }
+}
+
