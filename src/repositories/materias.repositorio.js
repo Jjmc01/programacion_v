@@ -350,6 +350,7 @@ export async function deleteMateria(id, userId) {
  * @throws {Error} Propaga errores generados por la consulta de MySQL.
  */
 export async function findTareasByMateriaAndUserId(id, userId) {
+  // Esta consulta selecciona las tareas de una materia del usuario.
   const [rows] = await pool.execute(
     `SELECT
        t.id_tarea AS id,
@@ -376,15 +377,11 @@ export async function findTareasByMateriaAndUserId(id, userId) {
 /**
  * Busca los eventos de una materia y filtra también por el usuario propietario.
  *
- * @async
- * @function findEventosByMateriaAndUserId
  * @param {string|number} id - Identificador de la materia.
- * @param {string|number} userId - Identificador del usuario propietario de la materia.
- * @returns {Promise<Object[]>} Filas de eventos encontradas con sus campos en camelCase.
- * @throws {Error} Propaga errores generados por la consulta de MySQL.
+ * @param {string|number} userId - Identificador del usuario propietario.
+ * @returns {Promise<Object[]>} Filas de eventos con sus campos en camelCase.
  */
 export async function findEventosByMateriaAndUserId(id, userId) {
-  // esta es la function que selecciona los eventos de una materia, miren que el proceso es el mismo
   const [rows] = await pool.execute(
     `SELECT
        e.id_evento AS id,
